@@ -27,7 +27,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 
 public class AvailableContactsView extends BorderPane{
-	TreeSet<Contact> contacts;
+	private TreeSet<Contact> contacts;
 	
 	private TextField search =  new TextField();
 	private HBox searchPane = new HBox();
@@ -99,7 +99,7 @@ public class AvailableContactsView extends BorderPane{
 			searchIcon.setOpacity(.7);
 			
 			//style 
-			search.setPadding(new Insets(10, 20, 10, 20));
+			search.setPadding(new Insets(10, 20, 10, 10));
 			search.setPromptText("Search");
 			search.setFont(Font.font("ubuntu", 15));
 			search.setStyle("-fx-background-color: transparent;" + 
@@ -112,7 +112,7 @@ public class AvailableContactsView extends BorderPane{
 				getSearchedItems();});
 			
 			//place the icon and field into the pane
-			searchPane.getChildren().addAll(searchIcon, search);
+			searchPane.getChildren().addAll(new StackPane(searchIcon), search);
 	}
 	
 	/**
@@ -167,7 +167,7 @@ public class AvailableContactsView extends BorderPane{
 		
 		//edit button
 		edit = createButton("edit_black_48.png", 23, "edit contact");
-		edit.setOnAction(e -> editSelectedItem());
+		edit.setOnAction(e -> editContact());
 		
 		//delete button
 		delete = createButton("trash_black_48.png", 23, "delete contacts");
@@ -204,23 +204,16 @@ public class AvailableContactsView extends BorderPane{
 	}
 	
 	/**
-	 * creates a contact form view and then populates its text field with
-	 * content from the contact. The content is the one that needs to be edited.
+	 * creates a contact form view object and then populates the form's 
+	 * fields with the contact's information for editing.
 	 */
 	@SuppressWarnings("unchecked")
-	protected void editSelectedItem() {
-		//contact to edit
+	protected void editContact() {
+		//get contact to edit
 		Contact contactToEdit = getList().getSelectionModel().getSelectedItem();
 	
-		//contact form
+		//generate the contact form
 		form = new ContactFormView(contacts, this);
-	
-		//revert everything when the contact forms cancel button is triggered
-		form.getCancel().setOnAction(k -> {
-			setRightSide(new StackPane(new ContactView(getList().getSelectionModel().getSelectedItem())));
-			getLeft().setDisable(false);
-			getCancel().fire();
-		});
 	
 		//set name to edit
 		((TextField)form.getNameField().getChildren().get(1)).setText(contactToEdit.getName());
@@ -253,11 +246,8 @@ public class AvailableContactsView extends BorderPane{
 		//set note to edit
 		((TextInputControl)form.getNoteField().getChildren().get(1)).setText(contactToEdit.getNote());
 	
-		/*
-		 * This register the save avtion to replace the contact that has been edited instead of adding it as a  new entry.
-		 * and by default a contact form is created with the cancel button is disabled is they are no contacts so we enable it since
-		 * there are contacts.
-		 */
+		//register the save and cancel button's action event 
+		//save the preferred alteration
 		form.save.setOnAction(e -> {
 			LinkedList<Contact> copyContactList = new LinkedList<>(contacts);
 			copyContactList.set(copyContactList.indexOf(contactToEdit), form.generateContact());
@@ -271,7 +261,14 @@ public class AvailableContactsView extends BorderPane{
 				getLeft().setDisable(false);
 		});
 		
-		//enable the save button because both the name and phone number is not empty.
+		//revert everything when the contact forms cancel button is triggered
+		form.getCancel().setOnAction(k -> {
+			setRightSide(new StackPane(new ContactView(getList().getSelectionModel().getSelectedItem())));
+			getLeft().setDisable(false);
+			getCancel().fire();
+		});
+		
+		//enable the save button because both the name and phone number fields are not empty.
 		form.save.setDisable(false);
 	
 		//set the view to right side and disable the left
