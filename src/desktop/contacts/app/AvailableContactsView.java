@@ -20,8 +20,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -32,19 +34,21 @@ public class AvailableContactsView extends BorderPane{
 	private TextField search =  new TextField();
 	private HBox searchPane = new HBox();
 	private ListView<Contact> list = new ListView<>();
-	private ContactView contactView;
-	private ContactFormView form = new ContactFormView(contacts, this);
-	
+		
 	//action buttons
 	private Button add = new Button();
 	private Button options = new Button();
 	private Button edit = new Button();
 	private Button delete =  new Button();
 	private Button cancel = new Button();
+	//holder of buttons.
 	private HBox bottomButtons = new HBox();
-	
 	//left side holds, the search, list and bottom buttons
 	private BorderPane leftSide = new BorderPane();
+	
+	//right side holds either a contactView object or ContactFormView object
+	private ContactView contactView;
+	private ContactFormView form = new ContactFormView(contacts, this);
 	private StackPane rightSide;
 	
 	private String backgroundcolor = "#19202de1";
@@ -53,77 +57,44 @@ public class AvailableContactsView extends BorderPane{
 	AvailableContactsView(){
 	}
 	
+	/*
+	 * When instantiating this class, start by initializing this class's member data.
+	 * hence this constructor starts by configuring the search & search pane, followed by the 
+	 * listView then the bottomButtons and lastly placing all those objects on the left side and 
+	 * placing either contact view or contact form on the right side.
+	 */
 	AvailableContactsView(TreeSet<Contact> contactList){
 		contacts = contactList;
 		
-		//initialize search
-		initializeSearch();
+		//---------------------------SEARCH SECTION -------------------
+		//search bar icon
+		ImageView searchIcon = createIcon("search_black_48.png", 25);
+		searchIcon.setOpacity(.7);
 		
-		//initialize list
-		initializeList();
+		//style 
+		search.setPadding(new Insets(10, 20, 10, 10));
+		search.setPromptText("Search");
+		search.setFont(Font.font("ubuntu", 15));
+		search.setStyle("-fx-background-color: transparent;" + 
+										"-fx-color: black;");
+		searchPane.setStyle("-fx-background-color: #f9f9f9ff; -fx-padding: 5");
+		
+		//register actions
+		search.setOnAction(e -> search());
+		search.setOnKeyPressed(e -> {if(e.getCode() == KeyCode.ENTER)
+			search();});
+		search.setOnKeyTyped(e -> search());
+		
+		//place the icon and field into the pane
+		searchPane.getChildren().addAll(new StackPane(searchIcon), search);
 		
 		
-		initializeButtons();
-		
-		//initialize action buttons
-		initializeBottomButtons();
-		
-		leftSide.setTop(searchPane);
-		leftSide.setCenter(list);
-		leftSide.setBottom(new StackPane(bottomButtons));
-		leftSide.setMinWidth(200);
-		
-		this.setLeft(leftSide);
-		this.setCenter(rightSide);
-		
-		//if there no contacts show the add contact form view else 
-		//show the available contacts
-		if(getList().getSelectionModel().getSelectedItem() != null) {
-			setRightSide(new StackPane(new ContactView(getList().getSelectionModel().getSelectedItem())));
-			this.getCenter().setStyle("-fx-background-color: " + backgroundcolor2);
-		}else {
-			createFirstContactForm();
-			this.getCenter().setStyle("-fx-background-color: " + backgroundcolor);
-		}
-	}
-	
-	
-//---------------------------------------GUI Initialization functions -----------------------------------------------
-	/**
-	 * initializes and styles 
-	 * the search bar
-	 */
-	protected void initializeSearch() { 
-			//search bar icon
-			ImageView searchIcon = createIcon("search_black_48.png", 25);
-			searchIcon.setOpacity(.7);
-			
-			//style 
-			search.setPadding(new Insets(10, 20, 10, 10));
-			search.setPromptText("Search");
-			search.setFont(Font.font("ubuntu", 15));
-			search.setStyle("-fx-background-color: transparent;" + 
-											"-fx-color: black;");
-			searchPane.setStyle("-fx-background-color: #f9f9f9ff; -fx-padding: 5");
-			
-			//register actions
-			search.setOnAction(e -> getSearchedItems());
-			search.setOnKeyPressed(e -> {if(e.getCode() == KeyCode.ENTER)
-				getSearchedItems();});
-			
-			//place the icon and field into the pane
-			searchPane.getChildren().addAll(new StackPane(searchIcon), search);
-	}
-	
-	/**
-	 * initializes and styles the listView
-	 */
-	protected void initializeList() {
+		//---------------------------LIST SECTION ----------------------
 		//place holder for when there no contacts to show
 		StackPane placeHolder = new StackPane(new Label("Add your first contact"));
 		placeHolder.getChildren().get(0).setStyle("-fx-font-family: ubuntu; -fx-opacity: .6");
 		placeHolder.setStyle("-fx-background-color: none");
-		
+				
 		//set the list's contacts
 		list = new ListView<>(FXCollections.observableList(new LinkedList<>(contacts)));
 		list.getSelectionModel().selectFirst();
@@ -131,7 +102,7 @@ public class AvailableContactsView extends BorderPane{
 
 		//set the list's placeholder
 		list.setPlaceholder(placeHolder);
-		
+				
 		//update contact view when selected item changes
 		getList().getSelectionModel().selectedItemProperty().addListener(e -> {
 			if(list.getSelectionModel().getSelectedItem() != null) {
@@ -139,16 +110,24 @@ public class AvailableContactsView extends BorderPane{
 				setRightSide(new StackPane(contactView));
 			}
 		});
-	}
-	
-	/**
-	 * initializes all buttons with styled ones and 
-	 * registers most of their event.
-	 */
-	protected void initializeButtons() {
+		
+		
+		//---------------------------BUTTONS SECTION ----------------------
 		//add button
-		add = createButton("add_black_48.png", 23, "add contact");
-		add.getGraphic().setOpacity(.8);
+		add.setText("Create");
+		Rectangle rect = new Rectangle(80, 30);
+		rect.setArcHeight(30);
+		rect.setArcWidth(30);
+		add.setClip(rect);
+		add.setMinWidth(80);
+		add.setMinHeight(30);
+		add.setAlignment(Pos.CENTER);
+		add.setTextFill(Color.WHITE);
+		add.setFont(Font.font("ubuntu", FontWeight.BOLD, 12));
+		add.setStyle("-fx-background-color: " + backgroundcolor);
+		add.setPadding(new Insets(5, 10, 5, 10));
+		add.setOnMouseEntered(e -> add.setStyle("-fx-background-color: #6c5d532c;"));
+		add.setOnMouseExited(e -> add.setStyle("-fx-background-color: " + backgroundcolor));
 		add.setOnAction(e -> {
 			form = new ContactFormView(contacts, this);
 			form.getCancel().setOnAction(k -> {
@@ -159,47 +138,78 @@ public class AvailableContactsView extends BorderPane{
 			setRightSide(new StackPane(form));
 			getLeft().setDisable(true);
 		});
-		
+				
 		//selection button
-		options = createButton("menu_black_48.png", 23, "options");
+		options = createButton("menu_black.png", 25, "options");
 		options.getGraphic().setOpacity(.8);
-		options.setOnAction(e -> selectionToggled());
-		
+		options.setOnAction(e -> optionToggled());
+				
 		//edit button
 		edit = createButton("edit_black_48.png", 23, "edit contact");
 		edit.setOnAction(e -> editContact());
-		
+				
 		//delete button
 		delete = createButton("trash_black_48.png", 23, "delete contacts");
-		delete.setOnAction(e -> deleteSelectedItem());
-		
+		delete.setOnAction(e -> deleteContact());
+				
 		cancel = createButton("close_black_48.png", 23, "cancel");
 		cancel.setOnAction(e -> {
-			setBottomButtons(createPrimaryBottomButtons());
+			bottomButtons = new HBox();
+			//add and delete buttons
+			bottomButtons.setSpacing(136);
+			bottomButtons.getChildren().addAll(add, options);
+			bottomButtons.setStyle("-fx-padding: 10; -fx-background-color: #f9f9f9ff");
+			setBottomButtons(bottomButtons);
 			getList().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		});
-		
+				
 		form.getCancel().setOnAction(e -> {
 			setRightSide(new StackPane(new ContactView(getList().getSelectionModel().getSelectedItem())));
 			getCancel().fire();
 		});
+		
+		//
+		//add and delete buttons
+		bottomButtons.setAlignment(Pos.CENTER);
+		bottomButtons.setStyle("-fx-padding: 5; -fx-background-color: #f9f9f9ff");
+		bottomButtons.setSpacing(136);
+		bottomButtons.setMinWidth(200);
+		bottomButtons.getChildren().addAll(add, options);
+		
+		leftSide.setTop(searchPane);
+		leftSide.setCenter(list);
+		leftSide.setBottom(new StackPane(bottomButtons));
+		leftSide.setMinWidth(200);
+		
+		//---------------------------LAYOUT SECTION ----------------------
+		this.setLeft(leftSide);
+		this.setCenter(rightSide);
+		
+		//if there no contacts show the add contact form view else 
+		//show the available contacts
+		if(getList().getSelectionModel().getSelectedItem() != null) {
+			setRightSide(new StackPane(new ContactView(getList().getSelectionModel().getSelectedItem())));
+			this.getCenter().setStyle("-fx-background-color: " + backgroundcolor);
+		}else {
+			createFirstContactForm();
+			this.getCenter().setStyle("-fx-background-color: " + backgroundcolor);
+		}
 	}
+	
 	
 	/**
 	 * updates the bottom tab with new buttons when the options button is
 	 * triggered.
 	 */
-	protected void selectionToggled() {
+	protected void optionToggled() {
 		//change the selection model to allow multiple selections
 		getList().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		
 		//replace the bottom buttons with new ones
 		bottomButtons = new HBox();
-		bottomButtons.setAlignment(Pos.CENTER);
 		bottomButtons.setStyle("-fx-padding: 10, 0, 15, 0; -fx-background-color: #f9f9f9ff;");
 		bottomButtons.getChildren().addAll(edit, delete, cancel);
 		bottomButtons.setSpacing(75);
-		bottomButtons.setMinWidth(200);
 		setBottomButtons(bottomButtons);
 	}
 	
@@ -229,7 +239,7 @@ public class AvailableContactsView extends BorderPane{
 			((ComboBox<String>)form.getPhoneField().getChildren().get(5)).setValue(phoneNumberTags.getLast());
 		}
 		
-		//set phone numbers to edit
+		//set emails to edit
 		LinkedList<String> email = new LinkedList<>(contactToEdit.getEmail().keySet());
 		LinkedList<String> emailTags = new LinkedList<>(contactToEdit.getEmail().values());
 		((TextField)form.getEmailField().getChildren().get(1)).setText(email.getFirst());
@@ -278,9 +288,9 @@ public class AvailableContactsView extends BorderPane{
 
 	
 	/**
-	 * deletes all the selected items
+	 * deletes (all) the selected contact(s).
 	 */
-	protected void deleteSelectedItem() {
+	protected void deleteContact() {
 		contacts.removeAll(list.getSelectionModel().getSelectedItems());
 		getList().getSelectionModel().selectNext();
 		getList().setItems(FXCollections.observableList(new LinkedList<>(contacts)));
@@ -298,41 +308,17 @@ public class AvailableContactsView extends BorderPane{
 	/**
 	 * displays all available searched items.
 	 */
-	protected void getSearchedItems() {
+	protected void search() {
 		String query = getSearch().getText();
 		TreeSet<Contact> matchedItems = new TreeSet<>();
 		Iterator<Contact> iter = contacts.iterator();
 		while(iter.hasNext() && !query.isEmpty()) {
 			Contact contact = iter.next();
-			if((contact.getName().strip()).matches(query + "*")) 
+			if((contact.getName()).matches(query + ".*")) 
 				matchedItems.add(contact);
 		}
-		setList(new ListView<>(FXCollections.observableList(new LinkedList<>(contacts))));
-		getList().getSelectionModel().selectFirst();
+		getList().setItems((FXCollections.observableList(new LinkedList<>(matchedItems))));
 		getLeftSide().setCenter(getList());
-	}
-	
-	/**
-	 * The initial primary bottom buttons as the view is loaded
-	 */
-	protected void initializeBottomButtons() {
-		//add and delete buttons
-		bottomButtons = new HBox();
-		bottomButtons.setAlignment(Pos.CENTER);
-		bottomButtons.setStyle("-fx-padding: 10; -fx-background-color: #f9f9f9ff");
-		bottomButtons.setSpacing(183);
-		bottomButtons.setMinWidth(200);
-		bottomButtons.getChildren().addAll(add, options);
-	}
-
-	/**
-	 * This recreates the primary bottom buttons when the cancel button is triggered
-	 * @return HBox (bottomButtons)
-	 */
-	protected HBox createPrimaryBottomButtons() {
-		initializeBottomButtons();
-		
-		return bottomButtons;
 	}
 	
 	/**
@@ -530,7 +516,7 @@ public class AvailableContactsView extends BorderPane{
 	public void setRightSide(StackPane rightSide) {
 		this.rightSide = rightSide;
 		this.setCenter(this.rightSide);
-		this.getCenter().setStyle("-fx-background-color: " + backgroundcolor2 );
+		this.getCenter().setStyle("-fx-background-color: " + backgroundcolor);
 		if(getRightSide().getChildren().get(0) instanceof ContactView)
 			fadeIn((ContactView)getRightSide().getChildren().get(0));
 		else
