@@ -95,8 +95,8 @@ public class ContactView extends BorderPane {
 
 		//get the rounded border effect for the information location pane
 		Rectangle rect3 = new Rectangle(450, 45);
-		rect3.setArcHeight(10.0);
-		rect3.setArcWidth(10.0);
+		rect3.setArcHeight(40.0);
+		rect3.setArcWidth(40.0);
 		informationLocation.setClip(rect3);
 
 		//place all the above panes into the final pane
@@ -153,8 +153,8 @@ public class ContactView extends BorderPane {
 		GridPane.setRowSpan(image, 2);
 
 		Rectangle rect = new Rectangle(pane.getMaxWidth(), pane.getMinHeight());
-		rect.setArcHeight(10.0);
-		rect.setArcWidth(10.0);
+		rect.setArcHeight(20.0);
+		rect.setArcWidth(20.0);
 		pane.setClip(rect);
 
 		return pane;
@@ -166,7 +166,7 @@ public class ContactView extends BorderPane {
 	 * VBox.
 	 * @param size, dimensions of the icon
 	 * @param name, name of the image to be used as an icon
-	 * @param View, name of the VBox within which the gridpanes will be placed
+	 * @param view, name of the VBox within which the gridpanes will be placed
 	 * @param list, storage of the numbers or emails
 	 */
 	protected void loadItems(HashMap<String, String> list, VBox view, String name, int size) {
@@ -224,7 +224,7 @@ public class ContactView extends BorderPane {
 			letterId.setFont(Font.font("Glacial Indifference", FontWeight.BOLD, 80));
 			
 			//set background color of the circle
-			backColor = new Color(contact.getProfileColors()[0], contact.getProfileColors()[1], contact.getProfileColors()[2], .4);
+			backColor = new Color(contact.getProfileColors()[0], contact.getProfileColors()[1], contact.getProfileColors()[2], .2);
 			backCircle.setFill(backColor);
 			
 			//creates the lettered Logo item
