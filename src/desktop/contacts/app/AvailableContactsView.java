@@ -26,7 +26,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 
 public class AvailableContactsView extends BorderPane{
 	private TreeSet<Contact> contacts;
@@ -69,7 +68,7 @@ public class AvailableContactsView extends BorderPane{
 		//---------------------------SEARCH SECTION -------------------
 		//search bar icon
 		ImageView searchIcon = createIcon("search_black_48.png", 25);
-		searchIcon.setOpacity(.7);
+		searchIcon.setOpacity(.4);
 		
 		//style 
 		search.setPadding(new Insets(10, 20, 10, 10));
@@ -81,9 +80,9 @@ public class AvailableContactsView extends BorderPane{
 		
 		//register actions
 		search.setOnAction(e -> search());
-		search.setOnKeyPressed(e -> {if(e.getCode() == KeyCode.ENTER)
-			search();});
-		search.setOnKeyTyped(e -> search());
+		search.setOnKeyTyped(e -> {
+				search();
+		});
 		
 		//place the icon and field into the pane
 		searchPane.getChildren().addAll(new StackPane(searchIcon), search);
@@ -99,7 +98,8 @@ public class AvailableContactsView extends BorderPane{
 		list = new ListView<>(FXCollections.observableList(new LinkedList<>(contacts)));
 		list.getSelectionModel().selectFirst();
 		list.setFixedCellSize(60);
-
+		list.setStyle("-fx-background-color: none; -fx-border-style: solid; -fx-border-color: white");
+	
 		//set the list's placeholder
 		list.setPlaceholder(placeHolder);
 				
@@ -125,8 +125,8 @@ public class AvailableContactsView extends BorderPane{
 		add.setTextFill(Color.WHITE);
 		add.setFont(Font.font("ubuntu", FontWeight.BOLD, 12));
 		add.setStyle("-fx-background-color: " + backgroundcolor);
-		add.setPadding(new Insets(5, 10, 5, 10));
-		add.setOnMouseEntered(e -> add.setStyle("-fx-background-color: #6c5d532c;"));
+		add.setPadding(new Insets(0, 5, 0, 5));
+		add.setOnMouseEntered(e -> add.setStyle("-fx-background-color: " + backgroundcolor2));
 		add.setOnMouseExited(e -> add.setStyle("-fx-background-color: " + backgroundcolor));
 		add.setOnAction(e -> {
 			form = new ContactFormView(contacts, this);
@@ -140,9 +140,9 @@ public class AvailableContactsView extends BorderPane{
 		});
 				
 		//selection button
-		options = createButton("menu_black.png", 25, "options");
+		options = createButton("menu_black.png", 23, "options");
 		options.getGraphic().setOpacity(.8);
-		options.setOnAction(e -> optionToggled());
+		options.setOnAction(e -> {optionToggled(); bottomButtons.requestFocus();});
 				
 		//edit button
 		edit = createButton("edit_black_48.png", 23, "edit contact");
@@ -156,9 +156,10 @@ public class AvailableContactsView extends BorderPane{
 		cancel.setOnAction(e -> {
 			bottomButtons = new HBox();
 			//add and delete buttons
+			bottomButtons.setAlignment(Pos.CENTER);
 			bottomButtons.setSpacing(136);
 			bottomButtons.getChildren().addAll(add, options);
-			bottomButtons.setStyle("-fx-padding: 10; -fx-background-color: #f9f9f9ff");
+			bottomButtons.setStyle("-fx-padding: 10, 0, 10, 0; -fx-background-color: #f9f9f9ff");
 			setBottomButtons(bottomButtons);
 			getList().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		});
@@ -171,7 +172,7 @@ public class AvailableContactsView extends BorderPane{
 		//
 		//add and delete buttons
 		bottomButtons.setAlignment(Pos.CENTER);
-		bottomButtons.setStyle("-fx-padding: 5; -fx-background-color: #f9f9f9ff");
+		bottomButtons.setStyle("-fx-padding: 10, 0, 10, 0; -fx-background-color: #f9f9f9ff;");
 		bottomButtons.setSpacing(136);
 		bottomButtons.setMinWidth(200);
 		bottomButtons.getChildren().addAll(add, options);
@@ -207,7 +208,7 @@ public class AvailableContactsView extends BorderPane{
 		
 		//replace the bottom buttons with new ones
 		bottomButtons = new HBox();
-		bottomButtons.setStyle("-fx-padding: 10, 0, 15, 0; -fx-background-color: #f9f9f9ff;");
+		bottomButtons.setStyle("-fx-padding: 10, 0, 10, 0; -fx-background-color: #f9f9f9ff;");
 		bottomButtons.getChildren().addAll(edit, delete, cancel);
 		bottomButtons.setSpacing(75);
 		setBottomButtons(bottomButtons);
@@ -231,24 +232,12 @@ public class AvailableContactsView extends BorderPane{
 		//set phone numbers to edit
 		LinkedList<String> phoneNumbers = new LinkedList<>(contactToEdit.getPhoneNumbers().keySet());
 		LinkedList<String> phoneNumberTags = new LinkedList<>(contactToEdit.getPhoneNumbers().values());
-		((TextField)form.getPhoneField().getChildren().get(1)).setText(phoneNumbers.getFirst());
-		((ComboBox<String>)form.getPhoneField().getChildren().get(2)).setValue(phoneNumberTags.getFirst());
-		if(phoneNumbers.size() == 2) {
-			((Button)form.getPhoneField().getChildren().get(3)).fire();
-			((TextField)form.getPhoneField().getChildren().get(4)).setText(phoneNumbers.getLast());
-			((ComboBox<String>)form.getPhoneField().getChildren().get(5)).setValue(phoneNumberTags.getLast());
-		}
+		loadItemshelper(form, phoneNumbers, phoneNumberTags);
 		
 		//set emails to edit
 		LinkedList<String> email = new LinkedList<>(contactToEdit.getEmail().keySet());
 		LinkedList<String> emailTags = new LinkedList<>(contactToEdit.getEmail().values());
-		((TextField)form.getEmailField().getChildren().get(1)).setText(email.getFirst());
-		((ComboBox<String>)form.getEmailField().getChildren().get(2)).setValue(emailTags.getFirst());
-		if(email.size() == 2) {
-			((Button)form.getEmailField().getChildren().get(3)).fire();
-			((TextField)form.getEmailField().getChildren().get(4)).setText(email.getLast());
-			((ComboBox<String>)form.getEmailField().getChildren().get(5)).setValue(emailTags.getLast());
-		}
+		loadItemshelper(form, email, emailTags);
 		
 		//set address to edit
 		((TextField)form.getAddressField().getChildren().get(1)).setText(contactToEdit.getAddress());
@@ -286,6 +275,17 @@ public class AvailableContactsView extends BorderPane{
 		getLeft().setDisable(true);
  	}
 
+	//this is a helper method used by the edit method.
+	@SuppressWarnings("unchecked")
+	public void loadItemshelper(ContactFormView form, LinkedList<String> items, LinkedList<String> itemsTag) {
+		((TextField)form.getEmailField().getChildren().get(1)).setText(items.getFirst());
+		((ComboBox<String>)form.getEmailField().getChildren().get(2)).setValue(itemsTag.getFirst());
+		if(items.size() == 2) {
+			((Button)form.getEmailField().getChildren().get(3)).fire();
+			((TextField)form.getEmailField().getChildren().get(4)).setText(items.getLast());
+			((ComboBox<String>)form.getEmailField().getChildren().get(5)).setValue(itemsTag.getLast());
+		}
+	}
 	
 	/**
 	 * deletes (all) the selected contact(s).
@@ -314,10 +314,12 @@ public class AvailableContactsView extends BorderPane{
 		Iterator<Contact> iter = contacts.iterator();
 		while(iter.hasNext() && !query.isEmpty()) {
 			Contact contact = iter.next();
-			if((contact.getName()).matches(query + ".*")) 
+			if((contact.getName().toLowerCase()).matches(query.toLowerCase() + ".*")) 
 				matchedItems.add(contact);
 		}
-		getList().setItems((FXCollections.observableList(new LinkedList<>(matchedItems))));
+		if(matchedItems.isEmpty())getList().setItems(FXCollections.observableList(new LinkedList<>(contacts)));
+		else
+			getList().setItems((FXCollections.observableList(new LinkedList<>(matchedItems))));
 		getLeftSide().setCenter(getList());
 	}
 	
