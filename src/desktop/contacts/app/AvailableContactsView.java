@@ -1,3 +1,7 @@
+/**
+ * @author matthews offen
+ */
+
 package desktop.contacts.app;
 
 import java.util.Iterator;
@@ -18,6 +22,7 @@ import javafx.scene.control.TextInputControl;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -27,6 +32,17 @@ import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import javafx.scene.image.ImageView;
 
+/**
+ * This is used to create the main UI object which interacts with the user.
+ * It has two parts, the left side and the center in BorderPane's lingo/Definition.
+ * <b>The Left Side</b>
+ * the left side consists of another border pane that consists of a top part, center and bottom part, 
+ * the top has a search bar, the center part has the list view and bottom part holds the action buttons.
+ *  <b>The Right Side</b>
+ *  The right side can contain either a contactView object, that is if you are viewing contacts or 
+ *  contactFormView object, that is if you are adding a contact. On the first run of the app, you'll surely get
+ *  the form first since you don't have any entries, of course this is overriden if you tend to have some contacts already.  
+ */
 public class AvailableContactsView extends BorderPane{
 	private TreeSet<Contact> contacts;
 	
@@ -105,7 +121,7 @@ public class AvailableContactsView extends BorderPane{
 				
 		//update contact view when selected item changes
 		getList().getSelectionModel().selectedItemProperty().addListener(e -> {
-			if(list.getSelectionModel().getSelectedItem() != null) {
+			if(list.getSelectionModel().getSelectedItem() != null ) {
 				setContactView(new ContactView(list.getSelectionModel().getSelectedItem()));
 				setRightSide(new StackPane(contactView));
 			}
@@ -114,7 +130,7 @@ public class AvailableContactsView extends BorderPane{
 		
 		//---------------------------BUTTONS SECTION ----------------------
 		//add button
-		add.setText("Create");
+		add.setText("create");
 		Rectangle rect = new Rectangle(80, 30);
 		rect.setArcHeight(30);
 		rect.setArcWidth(30);
@@ -123,7 +139,7 @@ public class AvailableContactsView extends BorderPane{
 		add.setMinHeight(30);
 		add.setAlignment(Pos.CENTER);
 		add.setTextFill(Color.WHITE);
-		add.setFont(Font.font("ubuntu", FontWeight.BOLD, 12));
+		add.setFont(Font.font("ubuntu", FontWeight.BOLD, 14));
 		add.setStyle("-fx-background-color: " + backgroundcolor);
 		add.setPadding(new Insets(0, 5, 0, 5));
 		add.setOnMouseEntered(e -> add.setStyle("-fx-background-color: " + backgroundcolor2));
@@ -169,7 +185,6 @@ public class AvailableContactsView extends BorderPane{
 			getCancel().fire();
 		});
 		
-		//
 		//add and delete buttons
 		bottomButtons.setAlignment(Pos.CENTER);
 		bottomButtons.setStyle("-fx-padding: 10, 0, 10, 0; -fx-background-color: #f9f9f9ff;");
@@ -218,7 +233,6 @@ public class AvailableContactsView extends BorderPane{
 	 * creates a contact form view object and then populates the form's 
 	 * fields with the contact's information for editing.
 	 */
-	@SuppressWarnings("unchecked")
 	protected void editContact() {
 		//get contact to edit
 		Contact contactToEdit = getList().getSelectionModel().getSelectedItem();
@@ -232,12 +246,12 @@ public class AvailableContactsView extends BorderPane{
 		//set phone numbers to edit
 		LinkedList<String> phoneNumbers = new LinkedList<>(contactToEdit.getPhoneNumbers().keySet());
 		LinkedList<String> phoneNumberTags = new LinkedList<>(contactToEdit.getPhoneNumbers().values());
-		loadItemshelper(form, phoneNumbers, phoneNumberTags);
+		loadItemshelper(form, phoneNumbers, phoneNumberTags, form.getPhoneField());
 		
 		//set emails to edit
 		LinkedList<String> email = new LinkedList<>(contactToEdit.getEmail().keySet());
 		LinkedList<String> emailTags = new LinkedList<>(contactToEdit.getEmail().values());
-		loadItemshelper(form, email, emailTags);
+		loadItemshelper(form, email, emailTags, form.getEmailField());
 		
 		//set address to edit
 		((TextField)form.getAddressField().getChildren().get(1)).setText(contactToEdit.getAddress());
@@ -275,15 +289,19 @@ public class AvailableContactsView extends BorderPane{
 		getLeft().setDisable(true);
  	}
 
-	//this is a helper method used by the edit method.
+	/*
+	 * this is a helper method used by the edit method,
+	 * mainly it handles the work of loading information into the appropriate 
+	 * input fields.
+	 */
 	@SuppressWarnings("unchecked")
-	public void loadItemshelper(ContactFormView form, LinkedList<String> items, LinkedList<String> itemsTag) {
-		((TextField)form.getEmailField().getChildren().get(1)).setText(items.getFirst());
-		((ComboBox<String>)form.getEmailField().getChildren().get(2)).setValue(itemsTag.getFirst());
+	public void loadItemshelper(ContactFormView form, LinkedList<String> items, LinkedList<String> itemsTag, GridPane field) {
+		((TextField)field.getChildren().get(1)).setText(items.getFirst());
+		((ComboBox<String>)field.getChildren().get(2)).setValue(itemsTag.getFirst());
 		if(items.size() == 2) {
-			((Button)form.getEmailField().getChildren().get(3)).fire();
-			((TextField)form.getEmailField().getChildren().get(4)).setText(items.getLast());
-			((ComboBox<String>)form.getEmailField().getChildren().get(5)).setValue(itemsTag.getLast());
+			((Button)field.getChildren().get(3)).fire();
+			((TextField)field.getChildren().get(4)).setText(items.getLast());
+			((ComboBox<String>)field.getChildren().get(5)).setValue(itemsTag.getLast());
 		}
 	}
 	
@@ -295,8 +313,8 @@ public class AvailableContactsView extends BorderPane{
 		getList().getSelectionModel().selectNext();
 		getList().setItems(FXCollections.observableList(new LinkedList<>(contacts)));
 			
-		//if there still elements, show the selected one else
-		//load the contact form
+		//if there still elements, show the selected one, else
+		//load the contact form (assuming a user deletes all of the entries).
 		if(!list.getItems().isEmpty()) {
 			setContactView(new ContactView(list.getSelectionModel().getSelectedItem()));
 			setRightSide(new StackPane(contactView));
@@ -309,7 +327,9 @@ public class AvailableContactsView extends BorderPane{
 	 * displays all available searched items.
 	 */
 	protected void search() {
+		//query to use with RegExp for searching
 		String query = getSearch().getText();
+		//new set that holds the matching items
 		TreeSet<Contact> matchedItems = new TreeSet<>();
 		Iterator<Contact> iter = contacts.iterator();
 		while(iter.hasNext() && !query.isEmpty()) {
@@ -324,8 +344,9 @@ public class AvailableContactsView extends BorderPane{
 	}
 	
 	/**
+	 * Helper method
 	 * creates an icon with predetermined dimensions
-	 * @param name, name of image to use 
+	 * @param name, name of image to use as icon
 	 * @param iconSize, dimesions of the icon
 	 * @return image, the icon
 	 */
@@ -337,7 +358,7 @@ public class AvailableContactsView extends BorderPane{
 	}
 	
 	/**
-	 * creates a styled buttons with generic actions registered for a more lively interaction 
+	 * creates styled buttons with generic actions registered for a more lively interaction 
 	 * @param iconName, image to use as icon 
 	 * @param iconSize, icon dimensions
 	 * @param tip, tip describing the button
@@ -363,7 +384,7 @@ public class AvailableContactsView extends BorderPane{
 	}
 	
 	/**
-	 * creates first ever contact form, used when there no contacts at all. 
+	 * creates first ever contact form, used when there no contact entries at all. 
 	 */
 	public void createFirstContactForm() {
 		getLeft().setDisable(true);
@@ -401,6 +422,7 @@ public class AvailableContactsView extends BorderPane{
 	 */
 	public void setList(ListView<Contact> list) {
 		this.list = list;
+		//enhance interactivity
 		fadeIn(getList());
 	}
 
@@ -486,6 +508,7 @@ public class AvailableContactsView extends BorderPane{
 	 */
 	public void setBottomButtons(HBox bottomButtons) {
 		this.bottomButtons = bottomButtons;
+		//enhance interactivity
 		fadeIn(getBottomButtons());
 		leftSide.setBottom(bottomButtons);
 	}
@@ -502,6 +525,7 @@ public class AvailableContactsView extends BorderPane{
 	 */
 	public void setLeftSide(BorderPane leftSide) {
 		this.leftSide = leftSide;
+		//enhance interactivity
 		fadeIn(getLeftSide());
 	}
 
@@ -541,6 +565,10 @@ public class AvailableContactsView extends BorderPane{
 	
 	
 //---------------------------------------Animation functions -----------------------------------------------		
+	/**
+	 * animates transition of the given node
+	 * @param E
+	 */
 	public void fadeIn(Parent E) {
 		FadeTransition fade = new FadeTransition(new Duration(300), E);
 		fade.setAutoReverse(true);
