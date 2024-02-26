@@ -1,11 +1,23 @@
+/**
+ * @author matthews offen
+ */
+
 package desktop.contacts.app;
 
 import java.io.Serializable;
 import java.util.HashMap;
 
+/**
+ * This class is used for instantiating a contact object that holds information of a contact entry.
+ * contact entry models a real life person, hence the object will have  a name property and contact details
+ * which comprises of phone numbers and email. in addition to this, a contact can also have an additional note or description
+ * that may be used to further distinguish the person. objects from this class are serializable hence can be 
+ * saved to an output file.   
+ */
 public class Contact implements Cloneable, Serializable, Comparable<Contact>{
 	private static final long serialVersionUID = -3346460993797773103L; 
 	
+	//stores colors used by the contactView in background color of the logo
 	private double[] profileColors = new double[3];
 	
 	private String name = "unkown";
