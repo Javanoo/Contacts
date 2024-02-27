@@ -28,4 +28,8 @@ Will soon add a bash installation script, for now just build it from the source.
 Everyone wishing to help, teach or contribute to the source code is welcomed to do so. its a play ground<br>
 for literally everyone so issue that pull request little one!!
 
-[^1]: &copy;2024 Matthews, your student.
+### Social notes
+Wanna talk? hit me up on discord, i go by "MVTT"(without the quotes).<br>
+Or even better, let's listen to some sounds  [BUNT. - take me home](https://soundcloud.com/buntmusic/take-me-home-ft-alexander-tidebrink?si=31a25f08b13c4235a5c0d7fcc6a150cc&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing) OR [BUNT. - gypsy heart](https://soundcloud.com/buntmusic/gypsy-heart?si=276bc63a715644cda4a79cc4c1f03bf9&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing)
+
+[^1]: &copy;2024 Matthews, your student. [^1]:
