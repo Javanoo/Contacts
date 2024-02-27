@@ -37,4 +37,4 @@ Or even better, let's listen to some sounds  [BUNT. - take me home](https://soun
 ---
 ### credits
 All icons have been sourced from [icons8](https://icons8.com/icons/set/), check them out if need some icons.
-[^1]: &copy;2024 Matthews, your student. [^1]:
+[^1]: &copy;2024 Matthews. [^1]:
