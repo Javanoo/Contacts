@@ -3,7 +3,7 @@
 ### Introduction
 ---
 Hello there, welcome to this playground project.
-<br>contacts is a contact management application made with java core and javafx technologies.
+<br>contacts is a contact management application made with java core and javafx technologies.<br>
 I started working on it some weeks ago, and yes as you guessed it, its my first ever project hence<br>
 why it took that long for such a simple program.
 #### features
