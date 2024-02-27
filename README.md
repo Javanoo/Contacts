@@ -27,7 +27,7 @@ Will soon add a bash installation script, for now just build it from the source.
 ---
 ### Contribution
 Everyone wishing to help, teach or contribute to the source code is welcomed to do so. its a play ground<br>
-for literally everyone so issue that pull request little one!!
+for, literally everyone, so issue that pull request little one!!
 
 ---
 ### Social notes
