@@ -32,6 +32,7 @@ for, literally everyone, so issue that pull request little one!!
 ---
 ### Social notes
 Wanna talk? hit me up on discord, i go by "MVTT"(without the quotes).
+
 ---
 ### Credits
 All icons have been sourced from [icons8](https://icons8.com/icons/set/), check them out if you need some icons.
