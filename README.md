@@ -4,6 +4,8 @@
 Hello there, welcome to this playground project.
 <br>contacts is a contact management application made with java and javafx technologies.<br>
 Was just experimenting with javafx, nothing fancy, just how you go about it to get things done.<br>
+
+#### screenshots
 ![home screen](https://github.com/Javanoo/contacts/blob/main/screenshot1.png)
 ![home screen](https://github.com/Javanoo/contacts/blob/main/screenshot2.png)
 #### features
